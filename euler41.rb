@@ -2,99 +2,52 @@
 # 
 # What is the largest n-digit pandigital prime that exists?
 
-
-# def collect_primes(limit)  
-#   prime_numbers = [1,2]
-#   n = 3
-# 
-#   while n <= limit
-#     puts "Number: #{n}"
-#     if (n > 2) and (n % 2 == 0)
-#       puts "Number #{n} is even"
-#       n += 1
-#       break
-#     end
-# 
-#     prime_numbers.each do |prime|
-#       if (prime > 1) and (n % prime == 0)
-#         puts "Number #{n} is odd and composite"
-#         break
-#       else
-#         prime_numbers << n
-#       end
-#     end
-#     
-#     n += 1
-#   end
-#   
-#   return prime_numbers
-# end
-# 
-# puts collect_primes(10)
-
-
-
-def find_primes(limit)
-
-  primes = [1,2]
-  n = 3
-  while n <= limit
-    puts "Handling #{n}"
-    if (n % 2 == 0) and (n > 2)
-      puts "#{n} is even and not prime"
+def collect_primes(number)
+  
+  sieve = [nil, nil] + (2 .. number).to_a
+  
+  (2 .. Math.sqrt(number)).each do |n|
+    next unless sieve[n]
+    (n*n).step(number, n) do |num|
+      sieve[num] = nil
     end
-    
-    prime = false
-    
-    primes.each do |prime|
-      # The purpose of this code is to add 3 to the list of primes.
-      
-      if (n % prime == 0) and (prime > 2) and (prime != n)
-        prime = false
-        next
-      end
-    end
-      
-    if prime == true
-      puts "#{n} is prime"
-      primes << n
-    end
-    
-    
-    # primes.each do |prime|
-    #   
-    #   puts "Current prime: #{prime}"
-    #   if (prime > 2) and (prime != n)
-    #     if n % prime == 0
-    #       puts "#{n} is not prime"
-    #       prime = false
-    #     else
-    #       prime = true
-    #     end
-    #   end
-    #   
-    # end
-    # 
-    # if prime == true
-    #   puts "#{n} is prime"
-    #   primes << n
-    # end
-    
-    # primes.each do |prime|
-    #   puts "Current prime number: #{prime}"
-    #   if (n % prime == 0) and (prime > 1)
-    #     puts "#{n} is not even and is composite"
-    #   else
-    #     primes << n
-    #   end
-    # end
-    
-    n += 1
   end
   
+  primes = []
+  sieve.each do |x|
+    if x != nil
+      primes << x
+    end
+  end
   return primes
 end
 
-puts find_primes(4).inspect
+def collect_pandigital_primes(number)
+  
+  primes = collect_primes(Math.sqrt(number))
+  
+  num_array = number.to_s.split("").map { |x| x.to_i }
+  num_array = num_array.permutation(number.to_s.length).to_a.map { |x| x.join.to_i }
+  
+  pandigital_primes = []
+  
+  num_array.each do |pandigital|
 
+    count = 0
+    
+    primes.each do |prime|
+      if pandigital % prime == 0
+        count += 1
+      end
+    end
+    
+    if count == 0
+      pandigital_primes << pandigital
+    end
+  end
+  
+  return pandigital_primes  
+end
+
+puts collect_pandigital_primes(7654321).max
 
