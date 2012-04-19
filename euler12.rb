@@ -15,16 +15,33 @@
 # We can see that 28 is the first triangle number to have over five divisors.
 # 
 # What is the value of the first triangle number to have over five hundred divisors?
+def collect_primes(num)
+  
+  sieve = [nil, nil] + (2 .. number).to_a
+  
+  (2 .. Math.sqrt(number)).each do |n|
+    next unless sieve[n]
+    (n*n).step(number, n) do |num|
+      sieve[num] = nil
+    end
+  end
+  
+  primes = []
+  sieve.each do |x|
+    if x != nil
+      primes << x
+    end
+  end
+  return primes
+end
+@primes = collect_primes(100000)
 
 def find_triangle_numbers(num)
 
   triangle_numbers = []
-  numbers = (1..num).to_a
 
-  numbers.each do |number|
-    
-    triangle_numbers << (numbers[0]..numbers[number-1]).inject(:+)
-    
+  (1..num).each do |number|
+    triangle_numbers << number * (number + 1)/2 # closed form for adding all positive integers up to n: n * (n+1)/2 
   end
   
   return triangle_numbers
@@ -32,25 +49,75 @@ end
 
 def count_triangle_divisors(num)
   
+  # 24 = (2 ** 3) * (3 ** 1)
+  # # of factors: n = (p_1 ** x_1) * (p_2 ** x_2) * ... * (p_y ** x_y) 
+  # (2 ** 3 + 1) * (3 ** 1 + 1)
+  # (4) * ( 3 + 1)
+  #
+  
+  # 36: 1, 2, 3, 4, 6, 9, 12, 18, 36
+  # 2 * 18, 2 * 2 * 9, 2 * 2 * 3 * 3
+  # (2 ** 2) * (3 ** 2)
+  # (p ** (x+1)) * (p_1 ** (x_1 +1))
+  # (x+1) * (x_1+1)
+  
+  # 1. Generate next prime
+  # 2. If it divides n, keep dividing n by p, keep track of the number of times this goes
+  # (now n has decreased)
+  # 3. If n != 1, go to step 1
+  # 3:53
+  # If you run out of primes, you know that n is prime and will have only 2 divisors
+  
+
+
+  # result = 1
+  # while n != 1:
+  #     generate new prime p
+  #     power = 0
+  #     while (n % p == 0 ) :
+  #         power = power + 1
+  #         n = n/p
+  #     result = result * (power + 1)
+  # return result
+  
+  pos = 0
+  
+  triangle_divisors = []
   triangle_numbers = find_triangle_numbers(num)
-  divisors = [0]
-  divisor_lengths = [0]
-  p = 1
-
   triangle_numbers.each do |number|
-    puts "Triangle number: #{number}"
-    divisors[p] = (1..number).select { |i| number % i == 0 }
-    puts "Number of divisors: #{divisors[p].length}"
-    puts "Position: #{p}"
-    # divisor_lengths[p] = divisors[p].length
-    
-    if divisors[p].length > 500
-      return number
-    end
+    result = 1
+    while number != 1
+      p = @primes[pos]
+      power = 0
+      while (number % p == 0)
+        power = power + 1
+        number = n/p
+      end
+      result = result * (power + 1)
+      pos += 1
       
-    p += 1
-
+    end
+    triangle_divisors[triangle_numbers[number].index] = result
   end
+
+  # divisors = [0]
+  # divisor_lengths = [0]
+  # p = 1
+  # 
+  # triangle_numbers.each do |number|
+  #   puts "Triangle number: #{number}"
+  #   divisors[p] = (1..number).select { |i| number % i == 0 }
+  #   puts "Number of divisors: #{divisors[p].length}"
+  #   puts "Position: #{p}"
+  #   # divisor_lengths[p] = divisors[p].length
+  #   
+  #   if divisors[p].length > 500
+  #     return number
+  #   end
+  #     
+  #   p += 1
+  # 
+  # end
   
   # if divisor_lengths.max > 100
   #   return triangle_numbers[divisor_lengths.index(divisor_lengths.max)]
