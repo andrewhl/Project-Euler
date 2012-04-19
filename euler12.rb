@@ -15,7 +15,7 @@
 # We can see that 28 is the first triangle number to have over five divisors.
 # 
 # What is the value of the first triangle number to have over five hundred divisors?
-def collect_primes(num)
+def collect_primes(number)
   
   sieve = [nil, nil] + (2 .. number).to_a
   
@@ -34,7 +34,7 @@ def collect_primes(num)
   end
   return primes
 end
-@primes = collect_primes(100000)
+
 
 def find_triangle_numbers(num)
 
@@ -68,8 +68,6 @@ def count_triangle_divisors(num)
   # 3:53
   # If you run out of primes, you know that n is prime and will have only 2 divisors
   
-
-
   # result = 1
   # while n != 1:
   #     generate new prime p
@@ -80,51 +78,40 @@ def count_triangle_divisors(num)
   #     result = result * (power + 1)
   # return result
   
-  pos = 0
+  # triangle_divisors = []
   
-  triangle_divisors = []
+  primes = collect_primes(num)
   triangle_numbers = find_triangle_numbers(num)
   triangle_numbers.each do |number|
+    puts "Triangle number: #{number}"
+    pos = 0
     result = 1
     while number != 1
-      p = @primes[pos]
+      p = primes[pos]
       power = 0
       while (number % p == 0)
         power = power + 1
-        number = n/p
+        number = number/p
       end
       result = result * (power + 1)
       pos += 1
       
     end
-    triangle_divisors[triangle_numbers[number].index] = result
+    
+    puts "Number of divisors: #{result}"
+    
+    if result > 500
+      return number
+    end
+    
+    # triangle_divisors[triangle_numbers[number].index] = result
+  
   end
 
-  # divisors = [0]
-  # divisor_lengths = [0]
-  # p = 1
-  # 
-  # triangle_numbers.each do |number|
-  #   puts "Triangle number: #{number}"
-  #   divisors[p] = (1..number).select { |i| number % i == 0 }
-  #   puts "Number of divisors: #{divisors[p].length}"
-  #   puts "Position: #{p}"
-  #   # divisor_lengths[p] = divisors[p].length
-  #   
-  #   if divisors[p].length > 500
-  #     return number
-  #   end
-  #     
-  #   p += 1
-  # 
-  # end
   
-  # if divisor_lengths.max > 100
-  #   return triangle_numbers[divisor_lengths.index(divisor_lengths.max)]
-  # else
-  #   return "No number has more than 100 divisors"
-  # end
+  
+
   
 end
 
-puts count_triangle_divisors(100000).inspect
+puts count_triangle_divisors(100000)
